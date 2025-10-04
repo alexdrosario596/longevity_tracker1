@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../db/database_helper.dart'; // make sure this path matches your project
+import '../../db/database_helper.dart'; // adjust if needed
 
 class HealthQuestions extends StatefulWidget {
   @override
@@ -11,15 +11,15 @@ class _HealthQuestionsState extends State<HealthQuestions> {
   int _currentPage = 0;
 
   // Doctor check-ups
-  bool hasCheckups = false;
+  bool? hasCheckups;
   String doctorType = "";
 
   // Medications
-  bool takesMeds = false;
+  bool? takesMeds;
   List<Map<String, String>> medications = [];
 
   // Natural remedies
-  bool usesRemedies = false;
+  bool? usesRemedies;
   String remedies = "";
 
   @override
@@ -50,15 +50,15 @@ class _HealthQuestionsState extends State<HealthQuestions> {
               ),
             ElevatedButton(
               onPressed: () async {
-                // ✅ Save answers to DB before moving forward
+                // Save answers before moving forward
                 if (_currentPage == 0) {
                   await DatabaseHelper.instance.insertOnboardingAnswer(
                     "Health",
                     "Do you have Dr. check-ups?",
-                    hasCheckups ? "Yes - $doctorType" : "No",
+                    hasCheckups == true ? "Yes - $doctorType" : "No",
                   );
                 } else if (_currentPage == 1) {
-                  if (takesMeds) {
+                  if (takesMeds == true) {
                     for (var med in medications) {
                       await DatabaseHelper.instance.insertOnboardingAnswer(
                         "Health",
@@ -77,16 +77,16 @@ class _HealthQuestionsState extends State<HealthQuestions> {
                   await DatabaseHelper.instance.insertOnboardingAnswer(
                     "Health",
                     "Do you like natural remedies?",
-                    usesRemedies ? "Yes - $remedies" : "No",
+                    usesRemedies == true ? "Yes - $remedies" : "No",
                   );
                 }
 
-                // ✅ Move forward or finish
+                // Navigate forward
                 if (_currentPage < 2) {
                   setState(() => _currentPage++);
                   _pageController.jumpToPage(_currentPage);
                 } else {
-                  Navigator.pop(context); // later → go to VitaminsQuestions
+                  Navigator.pop(context); // Later: go to VitaminsQuestions
                 }
               },
               child: Text(_currentPage < 2 ? "Next" : "Finish"),
@@ -108,15 +108,23 @@ class _HealthQuestionsState extends State<HealthQuestions> {
         Row(
           children: [
             Checkbox(
-              value: hasCheckups,
+              value: hasCheckups == true,
               onChanged: (val) {
-                setState(() => hasCheckups = val!);
+                setState(() => hasCheckups = true);
               },
             ),
             const Text("Yes"),
+            const SizedBox(width: 20),
+            Checkbox(
+              value: hasCheckups == false,
+              onChanged: (val) {
+                setState(() => hasCheckups = false);
+              },
+            ),
+            const Text("No"),
           ],
         ),
-        if (hasCheckups)
+        if (hasCheckups == true)
           TextField(
             decoration: const InputDecoration(
               labelText: "Which Dr. do you visit more often?",
@@ -138,15 +146,23 @@ class _HealthQuestionsState extends State<HealthQuestions> {
         Row(
           children: [
             Checkbox(
-              value: takesMeds,
+              value: takesMeds == true,
               onChanged: (val) {
-                setState(() => takesMeds = val!);
+                setState(() => takesMeds = true);
               },
             ),
             const Text("Yes"),
+            const SizedBox(width: 20),
+            Checkbox(
+              value: takesMeds == false,
+              onChanged: (val) {
+                setState(() => takesMeds = false);
+              },
+            ),
+            const Text("No"),
           ],
         ),
-        if (takesMeds)
+        if (takesMeds == true)
           Column(
             children: [
               ElevatedButton(
@@ -166,15 +182,18 @@ class _HealthQuestionsState extends State<HealthQuestions> {
                 return Column(
                   children: [
                     TextField(
-                      decoration: const InputDecoration(labelText: "Medication name"),
+                      decoration:
+                      const InputDecoration(labelText: "Medication name"),
                       onChanged: (val) => medications[index]["name"] = val,
                     ),
                     TextField(
-                      decoration: const InputDecoration(labelText: "How often?"),
+                      decoration:
+                      const InputDecoration(labelText: "How often?"),
                       onChanged: (val) => medications[index]["frequency"] = val,
                     ),
                     TextField(
-                      decoration: const InputDecoration(labelText: "How do you feel after taking it?"),
+                      decoration: const InputDecoration(
+                          labelText: "How do you feel after taking it?"),
                       onChanged: (val) => medications[index]["feeling"] = val,
                     ),
                   ],
@@ -197,15 +216,23 @@ class _HealthQuestionsState extends State<HealthQuestions> {
         Row(
           children: [
             Checkbox(
-              value: usesRemedies,
+              value: usesRemedies == true,
               onChanged: (val) {
-                setState(() => usesRemedies = val!);
+                setState(() => usesRemedies = true);
               },
             ),
             const Text("Yes"),
+            const SizedBox(width: 20),
+            Checkbox(
+              value: usesRemedies == false,
+              onChanged: (val) {
+                setState(() => usesRemedies = false);
+              },
+            ),
+            const Text("No"),
           ],
         ),
-        if (usesRemedies)
+        if (usesRemedies == true)
           TextField(
             decoration: const InputDecoration(
               labelText: "Which natural remedies do you use?",

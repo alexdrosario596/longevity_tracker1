@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/dashboard_screen.dart';
+import 'screens/onboarding/onboarding_intro.dart';
 
 void main() {
   runApp(LongevityApp());
@@ -11,7 +12,7 @@ class LongevityApp extends StatelessWidget {
     return MaterialApp(
       title: 'Longevity Tracker',
       theme: ThemeData(primarySwatch: Colors.teal),
-      home: DashboardScreen(),
+      home: OnboardingIntro(),
     );
   }
 }
