@@ -19,8 +19,9 @@ class DatabaseHelper {
     final path = join(dbPath, filePath);
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,            // ⬅️ bumped from 1 → 2
       onCreate: _createDB,
+      onUpgrade: _onUpgrade, // ⬅️ now included
     );
   }
 
@@ -45,6 +46,21 @@ class DatabaseHelper {
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     ''');
+  }
+
+  // ✅ Runs when upgrading DB version
+  Future _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS onboarding_answers (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          category TEXT NOT NULL,
+          question TEXT NOT NULL,
+          answer TEXT,
+          timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+      ''');
+    }
   }
 
   // ============================
