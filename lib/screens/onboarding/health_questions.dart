@@ -8,6 +8,8 @@ class HealthQuestions extends StatefulWidget {
 
 class _HealthQuestionsState extends State<HealthQuestions> {
   final PageController _pageController = PageController();
+  final ScrollController _scrollController = ScrollController();
+
   int _currentPage = 0;
 
   // Doctor check-ups
@@ -165,6 +167,7 @@ class _HealthQuestionsState extends State<HealthQuestions> {
 
   Widget _buildMedicationPage() {
     return SingleChildScrollView(
+      controller: _scrollController,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -205,6 +208,14 @@ class _HealthQuestionsState extends State<HealthQuestions> {
                           "frequency": "",
                           "feeling": "",
                         });
+                      });
+                      // Smooth scroll to the bottom so the new card is visible
+                      Future.delayed(const Duration(milliseconds: 100), () {
+                        _scrollController.animateTo(
+                          _scrollController.position.maxScrollExtent,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeOut,
+                        );
                       });
                     },
                   ),
