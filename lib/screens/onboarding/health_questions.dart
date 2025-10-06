@@ -53,7 +53,7 @@ class _HealthQuestionsState extends State<HealthQuestions> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  if (_currentPage > 0)
+                  if (_currentPage >= 0)
                     ElevatedButton.icon(
                       icon: const Icon(Icons.arrow_back),
                       label: const Text("Back"),
@@ -164,79 +164,103 @@ class _HealthQuestionsState extends State<HealthQuestions> {
   }
 
   Widget _buildMedicationPage() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Do you take medication?",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          Row(
-            children: [
-              Checkbox(
-                value: takesMeds == true,
-                onChanged: (val) {
-                  setState(() => takesMeds = true);
-                },
-              ),
-              const Text("Yes"),
-              const SizedBox(width: 20),
-              Checkbox(
-                value: takesMeds == false,
-                onChanged: (val) {
-                  setState(() => takesMeds = false);
-                },
-              ),
-              const Text("No"),
-            ],
-          ),
-          if (takesMeds == true)
-            Column(
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Do you take medication?",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            Row(
               children: [
-                ElevatedButton(
-                  child: const Text("Add Medication"),
-                  onPressed: () {
-                    setState(() {
-                      medications.add({
-                        "name": "",
-                        "frequency": "",
-                        "feeling": "",
-                      });
-                    });
+                Checkbox(
+                  value: takesMeds == true,
+                  onChanged: (val) {
+                    setState(() => takesMeds = true);
                   },
                 ),
-                ...medications.asMap().entries.map((entry) {
-                  int index = entry.key;
-                  return Column(
-                    children: [
-                      TextField(
-                        decoration: const InputDecoration(
-                            labelText: "Medication name"),
-                        onChanged: (val) => medications[index]["name"] = val,
-                      ),
-                      TextField(
-                        decoration:
-                        const InputDecoration(labelText: "How often?"),
-                        onChanged: (val) =>
-                        medications[index]["frequency"] = val,
-                      ),
-                      TextField(
-                        decoration: const InputDecoration(
-                            labelText: "How do you feel after taking it?"),
-                        onChanged: (val) =>
-                        medications[index]["feeling"] = val,
-                      ),
-                    ],
-                  );
-                }),
+                const Text("Yes"),
+                const SizedBox(width: 20),
+                Checkbox(
+                  value: takesMeds == false,
+                  onChanged: (val) {
+                    setState(() => takesMeds = false);
+                  },
+                ),
+                const Text("No"),
               ],
             ),
-        ],
+            if (takesMeds == true)
+              Column(
+                children: [
+                  ElevatedButton(
+                    child: const Text("Add Medication"),
+                    onPressed: () {
+                      setState(() {
+                        medications.add({
+                          "name": "",
+                          "frequency": "",
+                          "feeling": "",
+                        });
+                      });
+                    },
+                  ),
+                  ...medications.asMap().entries.map((entry) {
+                    int index = entry.key;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Medication ${index + 1}",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 16),
+                              ),
+                              const SizedBox(height: 8),
+                              TextField(
+                                decoration: const InputDecoration(
+                                    labelText: "Medication name"),
+                                onChanged: (val) =>
+                                medications[index]["name"] = val,
+                              ),
+                              TextField(
+                                decoration: const InputDecoration(
+                                    labelText: "How often?"),
+                                onChanged: (val) =>
+                                medications[index]["frequency"] = val,
+                              ),
+                              TextField(
+                                decoration: const InputDecoration(
+                                    labelText:
+                                    "How do you feel after taking it?"),
+                                onChanged: (val) =>
+                                medications[index]["feeling"] = val,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(), // ✅ important: close the map() and convert to list
+                ],
+              ),
+          ],
+        ),
       ),
     );
   }
+
 
   Widget _buildRemediesPage() {
     return Padding(
